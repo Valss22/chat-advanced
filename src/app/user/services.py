@@ -9,7 +9,7 @@ TOKEN_KEY = "ndg5P:,gr6K3?ug3ZdT@dD"
 
 
 def get_token(user_id: str, username: str):
-    payload: dict = {
+    payload = {
         "id": str(user_id),
         "name": username,
         "exp": time() + TOKEN_TIME
@@ -20,5 +20,6 @@ def get_token(user_id: str, username: str):
 def create_user(user: UserIn, db: Session) -> UserOut:
     db.add(User(**user.dict()))
     db.commit()
-    print(db.query(User).all().last())
+    print(db.query(User).all())
+    return UserOut(id=1, token="32")
     # return UserOut(id=db.query(User).all().last())
