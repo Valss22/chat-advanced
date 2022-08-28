@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 
 
-class CreateUserModel(BaseModel):
+class UserIn(BaseModel):
     name: str
     password: str
+
+
+class UserOut(BaseModel):
+    id: int
+    token: str
