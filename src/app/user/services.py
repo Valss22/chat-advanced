@@ -1,5 +1,7 @@
 from time import time
 import jwt
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from src.app.user.model import User
 from src.app.user.schemas import UserIn, UserOut
@@ -8,9 +10,8 @@ TOKEN_TIME = 40_000
 TOKEN_KEY = "ndg5P:,gr6K3?ug3ZdT@dD"
 
 
-def get_token(user_id: str, username: str):
+def get_token(username: str):
     payload = {
-        "id": str(user_id),
         "name": username,
         "exp": time() + TOKEN_TIME
     }
@@ -19,7 +20,21 @@ def get_token(user_id: str, username: str):
 
 def create_user(user: UserIn, db: Session) -> UserOut:
     db.add(User(**user.dict()))
-    db.commit()
-    print(db.query(User).all())
-    return UserOut(id=1, token="32")
-    # return UserOut(id=db.query(User).all().last())
+    try:
+        db.commit()
+    except IntegrityError:
+        raise HTTPException(
+            status_code=400, 
+            detail="User already exists"
+        )
+    token = get_token(user.dict()["name"])
+    user_id = db.query(User).\
+    filter_by(name=user.dict()["name"]).first().id
+    return UserOut(id=user_id, token=token)
+
+
+def login_user(user: UserIn, db: Session) -> UserOut:
+    user_in_db = db.query(User).filter(User.username == user.username).first()
+    if user_in_db is None:
+        raise HTTPException(status_code=400, detail="User does not exist")
+    return UserOut()
