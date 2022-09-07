@@ -33,8 +33,18 @@ def create_user(user: UserIn, db: Session) -> UserOut:
     return UserOut(id=user_id, token=token)
 
 
-def login_user(user: UserIn, db: Session) -> UserOut:
-    user_in_db = db.query(User).filter(User.username == user.username).first()
-    if user_in_db is None:
-        raise HTTPException(status_code=400, detail="User does not exist")
-    return UserOut()
+def auth_user(user: UserIn, db: Session) -> UserOut:
+    user_in_db = db.query(User).\
+    filter_by(name=user.dict()["name"]).first()
+    if user_in_db:
+        if user_in_db.password == user.dict()["password"]:
+            token = get_token(user.dict()["name"])
+            return UserOut(id=user_in_db.id, token=token)
+        raise HTTPException(
+            status_code=400,
+            detail="Wrong password"
+        )
+    raise HTTPException(
+        status_code=400,
+        detail="User does not exist"
+    )
