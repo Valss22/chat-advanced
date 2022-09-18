@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from src.app.db import get_db
-from src.app.user.schemas import UserIn, UserOut
-from src.app.user.services import auth_user, create_user
+from fastapi import APIRouter
+from src.app.user.schemas import *
+from src.app.user.services import auth_user, create_user, get_user_by_name
+
 
 user_router = APIRouter(
     prefix="/user"
@@ -10,10 +9,16 @@ user_router = APIRouter(
 
 
 @user_router.post("/register/", response_model=UserOut)
-def register_user(user: UserIn, db: Session = Depends(get_db)):
-    return create_user(user, db)
+async def register_user(user: UserIn):
+    return await create_user(user)
 
 
 @user_router.post("/login/", response_model=UserOut)
-def login_user(user: UserIn, db: Session = Depends(get_db)):
-    return auth_user(user, db)
+async def login_user(user: UserIn):
+    return await auth_user(user)
+
+
+@user_router.get("/", response_model=UserDialogOut)
+async def get_user(name: str):
+    return await get_user_by_name(name)
+

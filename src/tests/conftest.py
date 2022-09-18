@@ -1,19 +1,32 @@
 import pytest
-from src.tests.db import engine
-from src.app.db import Base
 from src.app.main import app
-from fastapi.testclient import TestClient
-from src.tests.db import get_test_db
+from httpx import AsyncClient
+import asyncio
+from tortoise import Tortoise
+from src.app.db import APP_MODELS
+
+
+DB_TEST_URL = "postgres://postgres:788556@localhost/chat_advanced_test"
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    return asyncio.get_event_loop()
 
 
 @pytest.fixture(scope="session", autouse=True)
-def init_test_db():
-    Base.metadata.create_all(bind=engine)
+async def init_test_db():
+    await Tortoise.init(
+        db_url=DB_TEST_URL,
+        modules={"models": APP_MODELS},
+        _create_db=True,
+    )
+    await Tortoise.generate_schemas()
     yield
-    Base.metadata.drop_all(bind=engine)
+    await Tortoise._drop_databases()
      
 
 @pytest.fixture(scope="session")
-def client():
-    with TestClient(app=app, base_url="http://test") as client:
+async def client():
+    async with AsyncClient(app=app, base_url="http://test") as client:
         yield client

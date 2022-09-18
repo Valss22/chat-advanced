@@ -1,21 +1,18 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from tortoise.contrib.fastapi import register_tortoise
+from src.app.main import app
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:788556@localhost/chat_advanced"
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL
+DB_URL = "postgresql://postgres:788556@localhost/chat_advanced"
+
+APP_MODELS = [
+    "src.app.user.model",
+    "src.app.message.model",
+    "src.app.room.model",
+]
+
+register_tortoise(
+    app,
+    db_url=DB_URL,
+    modules={"models": APP_MODELS},
+    generate_schemas=True,
+    add_exception_handlers=True,
 )
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-def init_db():
-    Base.metadata.create_all(bind=engine)

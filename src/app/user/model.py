@@ -1,9 +1,9 @@
-from sqlalchemy import Integer, Column, String
-from src.app.db import Base
+from tortoise import fields, models
+from src.app.message.model import Message
 
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True)
-    password = Column(String)
+class User(models.Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255, unique=True)
+    password = fields.CharField(max_length=255)
+    message = fields.ReverseRelation['Message']

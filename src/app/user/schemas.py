@@ -9,3 +9,8 @@ class UserIn(BaseModel):
 class UserOut(BaseModel):
     id: int
     token: str
+
+
+class UserDialogOut(BaseModel):
+    id: int
+    name: str
