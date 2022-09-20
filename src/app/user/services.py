@@ -10,7 +10,7 @@ TOKEN_TIME = 40_000
 TOKEN_KEY = "ndg5P:,gr6K3?ug3ZdT@dD"
 
 
-def get_token(username: str):
+def get_token(username: str) -> str:
     payload = {
         "name": username,
         "exp": time() + TOKEN_TIME
@@ -32,7 +32,6 @@ async def create_user(user: UserIn) -> UserOut:
 
 
 async def auth_user(user: UserIn) -> UserOut:
-
     user_in_db = await User.filter(name=user.dict()["name"]).first()
     if user_in_db:
         if user_in_db.password == user.dict()["password"]:
