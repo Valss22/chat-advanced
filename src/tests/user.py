@@ -79,4 +79,4 @@ async def test_get_user_if_he_does_not_exist(client: AsyncClient):
         }
     )
     assert response.status_code == 400
-    assert response.json() == {"detail": "User does not exist"}
+    assert response.json() == {'detail': 'User does not exist'}

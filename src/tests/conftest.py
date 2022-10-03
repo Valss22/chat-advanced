@@ -6,19 +6,19 @@ from tortoise import Tortoise
 from src.app.db import APP_MODELS
 
 
-DB_TEST_URL = "postgres://postgres:788556@localhost/chat_advanced_test"
+DB_TEST_URL = 'postgres://postgres:788556@localhost/chat_advanced_test'
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def event_loop():
     return asyncio.get_event_loop()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope='session', autouse=True)
 async def init_test_db():
     await Tortoise.init(
         db_url=DB_TEST_URL,
-        modules={"models": APP_MODELS},
+        modules={'models': APP_MODELS},
         _create_db=True,
     )
     await Tortoise.generate_schemas()
@@ -26,7 +26,7 @@ async def init_test_db():
     await Tortoise._drop_databases()
      
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 async def client():
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(app=app, base_url='http://test') as client:
         yield client
