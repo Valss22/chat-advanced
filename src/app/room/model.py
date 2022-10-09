@@ -1,13 +1,13 @@
-from operator import mod
-from statistics import mode
-from tortoise import fields, models
-from src.app.message.model import Message
-from src.app.user.model import User
+from src.app.message.model import messages
+from src.app.user.model import users
+from src.app.db import metadata
+import sqlalchemy
 
 
-class Room(models.Model):
-    id = fields.IntField(pk=True)
-    user = fields.ReverseRelation['User']
-    message = fields.ReverseRelation['Message']
-
-
+rooms = sqlalchemy.Table(
+    'rooms',
+    metadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
+    #sqlalchemy.Column('user', sqlalchemy.Integer, sqlalchemy. ('users.id')),
+    #sqlalchemy.Column('message', sqlalchemy.Integer, sqlalchemy.ForeignKey('messages.id'))
+)

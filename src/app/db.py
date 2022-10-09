@@ -1,18 +1,14 @@
-from tortoise.contrib.fastapi import register_tortoise
+import databases
+import sqlalchemy
 from src.app.main import app
+
 
 DB_URL = "postgresql://postgres:788556@localhost/chat_advanced"
 
-APP_MODELS = [
-    "src.app.user.model",
-    "src.app.message.model",
-    "src.app.room.model",
-]
+db = databases.Database(DB_URL)
+metadata = sqlalchemy.MetaData()
 
-register_tortoise(
-    app,
-    db_url=DB_URL,
-    modules={"models": APP_MODELS},
-    generate_schemas=True,
-    add_exception_handlers=True,
+engine = sqlalchemy.create_engine(
+    DB_URL, connect_args={"check_same_thread": False}
 )
+metadata.create_all(engine)

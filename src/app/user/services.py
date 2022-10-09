@@ -11,7 +11,7 @@ TOKEN_KEY = 'ndg5P:,gr6K3?ug3ZdT@dD'
 
 
 class UserService:
-
+    
     def get_token(self, username: str) -> str:
         payload = {
             'name': username,

@@ -1,9 +1,12 @@
-from tortoise import fields, models
-from src.app.message.model import Message
+import sqlalchemy
+from src.app.db import metadata
 
 
-class User(models.Model):
-    id = fields.IntField(pk=True)
-    name = fields.CharField(max_length=255, unique=True)
-    password = fields.CharField(max_length=255)
-    message = fields.ReverseRelation['Message']
+users = sqlalchemy.Table(
+    'users',
+    metadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column('name', sqlalchemy.String(255), unique=True),
+    sqlalchemy.Column('password', sqlalchemy.String(255)),
+    sqlalchemy.Column('message', sqlalchemy.Integer, sqlalchemy.ForeignKey('messages.id'))
+)
