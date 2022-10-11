@@ -3,7 +3,7 @@ import sqlalchemy
 from src.app.main import app
 
 
-DB_URL = "postgresql://postgres:788556@localhost/chat_advanced"
+DB_URL = "sqlite:///./test.db"
 
 db = databases.Database(DB_URL)
 metadata = sqlalchemy.MetaData()

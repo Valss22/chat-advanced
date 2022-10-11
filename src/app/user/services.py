@@ -1,10 +1,10 @@
 from time import time
 import jwt
 from fastapi import HTTPException
-from src.app.user.model import User
+from src.app.user.model import users
 from src.app.user.schemas import *
-from tortoise.exceptions import IntegrityError
-
+from src.app.db import db
+import sqlalchemy
 
 TOKEN_TIME = 40_000
 TOKEN_KEY = 'ndg5P:,gr6K3?ug3ZdT@dD'
@@ -22,19 +22,20 @@ class UserService:
 
     async def create_user(self, user: UserIn) -> UserOut:
         try:
-            new_user = await User.create(**user.dict())    
-        except IntegrityError:
+            new_user = users.insert().values(**user.dict())
+            new_user_id = await db.execute(new_user)
+        except sqlalchemy.exc.IntegrityError:
             raise HTTPException(
                 status_code=400, 
                 detail='User already exists'
             )
-        token = self.get_token(user.dict()['name'])
-        new_user_id = new_user.id
+        token = self.get_token(user.name)
         return UserOut(id=new_user_id, token=token)
 
 
     async def auth_user(self, user: UserIn) -> UserOut:
-        user_in_db = await User.filter(name=user.dict()['name']).first()
+        user_in_db = users.select().where(users.c.name == user.name)
+        user_in_db = await db.fetch_one(user_in_db)
         if user_in_db:
             if user_in_db.password == user.dict()['password']:
                 token = self.get_token(user.dict()['name'])
