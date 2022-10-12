@@ -34,10 +34,10 @@ class UserService:
 
 
     async def auth_user(self, user: UserIn) -> UserOut:
-        user_in_db = users.select().where(users.c.name == user.name)
+        user_query = users.select().where(users.c.name == user.name)
         user_in_db = await db.fetch_one(user_in_db)
         if user_in_db:
-            if user_in_db.password == user.dict()['password']:
+            if user_in_db.password == user.password:
                 token = self.get_token(user.dict()['name'])
                 return UserOut(id=user_in_db.id, token=token)
             raise HTTPException(
@@ -51,7 +51,8 @@ class UserService:
 
 
     async def get_user_by_name(self, name: str) -> UserDialogOut:
-        user_in_db = await User.filter(name=name).first()
+        user_query = users.select().where(users.c.name == name)
+        user_in_db = await db.fetch_one(user_query)
         if user_in_db:
             return user_in_db
         raise HTTPException(
