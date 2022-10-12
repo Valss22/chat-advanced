@@ -2,8 +2,8 @@ import pytest
 from src.app.main import app
 from httpx import AsyncClient
 import asyncio
-from tortoise import Tortoise
-from src.app.db import APP_MODELS
+import databases
+import sqlalchemy
 
 
 DB_TEST_URL = 'postgres://postgres:788556@localhost/chat_advanced_test'
@@ -15,15 +15,15 @@ def event_loop():
 
 
 @pytest.fixture(scope='session', autouse=True)
-async def init_test_db():
-    await Tortoise.init(
-        db_url=DB_TEST_URL,
-        modules={'models': APP_MODELS},
-        _create_db=True,
+def init_test_db():
+    db = databases.Database(DB_TEST_URL)
+    metadata = sqlalchemy.MetaData()
+    engine = sqlalchemy.create_engine(
+        DB_TEST_URL, connect_args={"check_same_thread": False}
     )
-    await Tortoise.generate_schemas()
+    metadata.create_all(engine)
     yield
-    await Tortoise._drop_databases()
+    metadata.drop_all(engine)
      
 
 @pytest.fixture(scope='session')
