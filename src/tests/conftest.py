@@ -6,7 +6,7 @@ import databases
 import sqlalchemy
 
 
-DB_TEST_URL = 'postgres://postgres:788556@localhost/chat_advanced_test'
+DB_TEST_URL = 'postgresql://postgres:788556@localhost/chat_advanced_test'
 
 
 @pytest.fixture(scope='session')
@@ -19,7 +19,7 @@ def init_test_db():
     db = databases.Database(DB_TEST_URL)
     metadata = sqlalchemy.MetaData()
     engine = sqlalchemy.create_engine(
-        DB_TEST_URL, connect_args={"check_same_thread": False}
+        DB_TEST_URL, connect_args={}
     )
     metadata.create_all(engine)
     yield
