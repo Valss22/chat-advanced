@@ -9,8 +9,13 @@ metadata = sqlalchemy.MetaData()
 engine = sqlalchemy.create_engine(DB_URL)
 metadata.create_all(engine)
 
-db = databases.Database(DB_URL)
 
-def get_db():
-    return db
+async def get_db():
+    try:
+        db = databases.Database(DB_URL)
+        await db.connect()
+        yield db
+    finally:
+        await db.disconnect()
+    
 

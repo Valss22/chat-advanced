@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from databases import Database
+from fastapi import FastAPI, Depends
 from starlette.middleware.cors import CORSMiddleware
 from src.app.routers import api_router
-from src.app.db import db
+from src.app.db import get_db
 
 app = FastAPI()
 origins = ['*']
@@ -14,13 +15,13 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-@app.on_event('startup')
-async def startup():
-    await db.connect()
+# @app.on_event('startup')
+# async def startup(db: Database = Depends(get_db)):
+#     await db.connect()
 
 
-@app.on_event('shutdown')
-async def shutdown():
-    await db.disconnect()
+# @app.on_event('shutdown')
+# async def shutdown(db: Database = Depends(get_db)):
+#     await db.disconnect()
 
 app.include_router(api_router)

@@ -1,9 +1,9 @@
 from time import time
+from databases import Database
 import jwt
 from fastapi import HTTPException
 from src.app.user.model import users
 from src.app.user.schemas import *
-from src.app.db import db
 import sqlalchemy
 
 TOKEN_TIME = 40_000
@@ -20,7 +20,7 @@ class UserService:
         return jwt.encode(payload, TOKEN_KEY)
 
 
-    async def create_user(self, user: UserIn) -> UserOut:
+    async def create_user(self, user: UserIn, db: Database) -> UserOut:
         try:
             new_user = users.insert().values(**user.dict())
             new_user_id = await db.execute(new_user)
@@ -33,7 +33,7 @@ class UserService:
         return UserOut(id=new_user_id, token=token)
 
 
-    async def auth_user(self, user: UserIn) -> UserOut:
+    async def auth_user(self, user: UserIn, db: Database) -> UserOut:
         user_query = users.select().where(users.c.name == user.name)
         user_in_db = await db.fetch_one(user_in_db)
         if user_in_db:
@@ -50,7 +50,7 @@ class UserService:
         )
 
 
-    async def get_user_by_name(self, name: str) -> UserDialogOut:
+    async def get_user_by_name(self, name: str, db: Database) -> UserDialogOut:
         user_query = users.select().where(users.c.name == name)
         user_in_db = await db.fetch_one(user_query)
         if user_in_db:
