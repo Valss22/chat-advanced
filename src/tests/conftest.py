@@ -2,11 +2,7 @@ import pytest
 from src.app.main import app
 from httpx import AsyncClient
 import asyncio
-import databases
-import sqlalchemy
-
-
-DB_TEST_URL = 'postgresql://postgres:788556@localhost/chat_advanced_test'
+from src.tests.db import test_metadata, test_engine
 
 
 @pytest.fixture(scope='session')
@@ -16,14 +12,9 @@ def event_loop():
 
 @pytest.fixture(scope='session', autouse=True)
 def init_test_db():
-    db = databases.Database(DB_TEST_URL)
-    metadata = sqlalchemy.MetaData()
-    engine = sqlalchemy.create_engine(
-        DB_TEST_URL, connect_args={}
-    )
-    metadata.create_all(engine)
+    test_metadata.create_all(test_engine)
     yield
-    metadata.drop_all(engine)
+    test_metadata.drop_all(test_engine)
      
 
 @pytest.fixture(scope='session')
