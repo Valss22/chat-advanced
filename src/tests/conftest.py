@@ -3,7 +3,6 @@ from src.app.main import app
 from httpx import AsyncClient
 import asyncio
 from src.tests.db import test_metadata, test_engine
-from src.tests.db import test_db
 
 
 @pytest.fixture(scope='session')
