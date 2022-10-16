@@ -35,7 +35,7 @@ class UserService:
 
     async def auth_user(self, user: UserIn, db: Database) -> UserOut:
         user_query = users.select().where(users.c.name == user.name)
-        user_in_db = await db.fetch_one(user_in_db)
+        user_in_db = await db.fetch_one(user_query)
         if user_in_db:
             if user_in_db.password == user.password:
                 token = self.get_token(user.dict()['name'])

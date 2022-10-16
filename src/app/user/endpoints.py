@@ -14,7 +14,7 @@ user_router = APIRouter(
 async def register_user(
     user: UserIn, 
     db: Database = Depends(get_db),
-    user_service: UserService = Depends(get_db)
+    user_service: UserService = Depends()
 ):
     return await user_service.create_user(user, db)
 
